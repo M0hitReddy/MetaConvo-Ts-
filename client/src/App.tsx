@@ -55,19 +55,23 @@ const ProtectedRoute = ({ element }: { element: ReactNode }) => {
   const { loggedIn, checked, checkLoginState } = useAuth();
   const navigate = useNavigate();
 
-  const firstRender = useRef(true);
+  const firstRender = useRef<boolean>(true);
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
+    // if (firstRender.current) {
+    //   firstRender.current = false;
+    //   return;
+    // }
+    console.log(loggedIn, checked, "protected route");
+    if (!checked) {
+      // navigate("/login");
       return;
     }
-    console.log(loggedIn, checked, "protected route");
-    if (!checked) return;
     if (checkLoginState) {
       checkLoginState();
     }
     if (checked && !loggedIn) {
       navigate("/login");
+      return;
     }
   }, [loggedIn, checked, checkLoginState, navigate]);
 

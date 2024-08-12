@@ -38,22 +38,22 @@ export function ChatList({ search, items }: ChatListProps) {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
-//   useEffect(() => {
-//     if (!user) return;
-//     (async () => {
-//       try {
-//         const res: { data: ApiResponse } = await getConversations(user.user_id);
-//         console.log(res.data, "chats");
-//         chatsDispatch({
-//           type: "SET_CHATS",
-//           payload: res.data.conversations as Array<Conversation>,
-//         });
-//         console.log(res.data, "chats");
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     })();
-//   }, []);
+  //   useEffect(() => {
+  //     if (!user) return;
+  //     (async () => {
+  //       try {
+  //         const res: { data: ApiResponse } = await getConversations(user.user_id);
+  //         console.log(res.data, "chats");
+  //         chatsDispatch({
+  //           type: "SET_CHATS",
+  //           payload: res.data.conversations as Array<Conversation>,
+  //         });
+  //         console.log(res.data, "chats");
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     })();
+  //   }, []);
 
   const handleChatSelect = async (conv_id: number, user_id: string) => {
     // console.log(id, "id")
@@ -96,12 +96,17 @@ export function ChatList({ search, items }: ChatListProps) {
             >
               <Avatar className="w-12 h-12">
                 <AvatarImage src={item.picture} alt={item.username} />
-                <AvatarFallback>
-                  {item?.username ??
-                    "@ @ @"
-                      .split(" ")
-                      .map((chunk: string) => chunk[0])
-                      .join("")}
+                <AvatarFallback className="text-foreground">
+                  {item?.username
+                    ? item.username
+                        .split(" ")
+                        .map((chunk: string) => chunk.charAt(0).toUpperCase())
+                        .join("")
+                    : "@ @ @"
+                        .split(" ")
+                        .map((chunk: string) => chunk.charAt(0))
+                        .join("")}
+                  {/* AV */}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-grow flex-col items-start gap-1 text-left text-sm">
@@ -148,7 +153,9 @@ export function ChatList({ search, items }: ChatListProps) {
                   </span>
                   {(item.last_message_content &&
                     item.last_message_content?.substring(0, 300) +
-                      (item.last_message_content?.length <= 300 ? "" : "...")) ||
+                      (item.last_message_content?.length <= 300
+                        ? ""
+                        : "...")) ||
                     "No messages yet"}
                   {/* + "..." || "No messages yet"} */}
                 </div>
