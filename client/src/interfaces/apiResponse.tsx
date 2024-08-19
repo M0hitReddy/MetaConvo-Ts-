@@ -11,5 +11,6 @@ export interface ApiResponse {
     conversation?: Conversation
     conversation_id?: number
     conversations?: Array<Conversation>
+    translatedText?: Array<string>
     url?: string
 }

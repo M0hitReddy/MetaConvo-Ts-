@@ -37,25 +37,15 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { DropdownMenuSub } from "./ui/dropdown-menu";
+import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthContextProps } from "@/interfaces/authContextProps";
 import { logout } from "@/services/api";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useTheme } from "./ThemeProvider";
 import { HomeProps } from "@/pages/Home";
-import { openSync } from "fs";
-import { useState } from "react";
 
-interface AsideProps {
-  open: boolean;
-  dropdoenOpen?: boolean;
-  setDropdoenOpen?:(dropdownOpen: boolean) => void
-  setOpen: (open: boolean) => void;
-}
-
-export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNode {
-  const[dropdownOpen, setDropdownOpen] = useState<boolean>();
+export function Aside(): React.ReactNode {
   const { user }: AuthContextProps = useAuth();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
@@ -68,11 +58,7 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
     }
   }
   return (
-    <aside
-      className={`inset-y left-0 z-20 flex w-full flex-col h-full border-${
-        open ? "" : "r"
-      }`}
-    >
+    <aside className="inset-y left-0 z-20 flex flex-col border-r h-">
       <div className="border-b p-2">
         <Button
           variant="outline"
@@ -83,21 +69,16 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           <Triangle className="size-5 fill-foreground" />
         </Button>
       </div>
-      <nav className="flex flex-col items-center gap-1 p-2 h-screen w-ful">
+      <nav className="flex flex-col gap-1 p-2 h-screen">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size={`${open ? "default" : "icon"}`}
-              className={`rounded-lg flex gap-4 justify-${
-                open ? "start" : "center"
-              } w-${open ? "full" : "max"}`}
+              size="icon"
+              className="rounded-lg bg-muted"
               aria-label="Playground"
             >
-              <span>
-                <SquareTerminal className="size-5" />
-              </span>
-              {open ? <span>Playground</span> : null}
+              <SquareTerminal className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -108,16 +89,11 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size={`${open ? "default" : "icon"}`}
-              className={`rounded-lg flex gap-4 justify-${
-                open ? "start" : "center"
-              } w-${open ? "full" : "max"}`}
+              size="icon"
+              className="rounded-lg"
               aria-label="Models"
             >
-              <span>
-                <Bot className="size-5" />
-              </span>
-              {open ? <span>Playground</span> : null}
+              <Bot className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -128,16 +104,11 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size={`${open ? "default" : "icon"}`}
-              className={`rounded-lg flex gap-4 justify-${
-                open ? "start" : "center"
-              } w-${open ? "full" : "max"}`}
+              size="icon"
+              className="rounded-lg"
               aria-label="API"
             >
-              <span>
-                <Code2 className="size-5" />
-              </span>
-              {open ? <span>Playground</span> : null}
+              <Code2 className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -148,16 +119,11 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size={`${open ? "default" : "icon"}`}
-              className={`rounded-lg flex gap-4 justify-${
-                open ? "start" : "center"
-              } w-${open ? "full" : "max"}`}
+              size="icon"
+              className="rounded-lg"
               aria-label="Documentation"
             >
-              <span>
-                <Book className="size-5" />
-              </span>
-              {open ? <span>Playground</span> : null}
+              <Book className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -168,16 +134,11 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size={`${open ? "default" : "icon"}`}
-              className={`rounded-lg flex gap-4 justify-${
-                open ? "start" : "center"
-              } w-${open ? "full" : "max"}`}
+              size="icon"
+              className="rounded-lg"
               aria-label="Settings"
             >
-              <span>
-                <Settings2 className="size-5" />
-              </span>
-              {open ? <span>Playground</span> : null}
+              <Settings2 className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -185,25 +146,16 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           </TooltipContent>
         </Tooltip>
       </nav>
-      <nav
-        className={`mt-aut flex flex-col items-center gap-2 p-2 ${
-          open ? "initial" : "fixed"
-        } bottom-0 border-`}
-      >
+      <nav className="mt-auto grid fixed bottom-0 gap-1 p-2 border-r">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
-              size={`${open ? "default" : "icon"}`}
-              className={`rounded-lg flex gap-4 justify-${
-                open ? "start" : "center"
-              } w-${open ? "full" : "max"}`}
+              size="icon"
+              className="mt-auto rounded-lg"
               aria-label="Help"
             >
-              <span>
-                <LifeBuoy className="size-5" />
-              </span>
-              {open ? <span>Help</span> : null}
+              <LifeBuoy className="size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right" sideOffset={5}>
@@ -211,30 +163,37 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
           </TooltipContent>
         </Tooltip>
         <Tooltip>
-          <DropdownMenu open={dropdoenOpen}>
+          <DropdownMenu>
             <TooltipTrigger asChild>
-              <DropdownMenuTrigger className="w-full" asChild>
+              <DropdownMenuTrigger asChild>
                 <Button
-                  variant="ghost"
-                  size={`${open ? "default" : "icon"}`}
-                  className={`rounded-full p-0 flex justify-${
-                    open ? "start" : "center"
-                  } w-${open ? "full" : "max"}`}
+                  variant="secondary"
+                  size="icon"
+                  className="rounded-full"
                 >
-                  <span>
-                    <Avatar>
-                      {/* <img src={"https://github.com/shadcn.png"} alt="" /> */}
-                      <AvatarImage
-                        className="w-10 h-10"
-                        src={user?.picture}
-                        alt="@shadcn"
-                      />
-                      <AvatarFallback>
-                        <SquareUser className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                  </span>
-                  {open ? <span className="ml-3">Profile</span> : null}
+                  <SquareUser className="h-5 w-5" />
+                  <Avatar>
+                    {/* <img src={"https://github.com/shadcn.png"} alt="" /> */}
+                    <AvatarImage
+                      className="w-10 h-10"
+                      src={user?.picture}
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>
+                      {user?.username
+                        ? user.username
+                            .split(" ")
+                            .map((chunk: string) =>
+                              chunk.charAt(0).toUpperCase()
+                            )
+                            .join("")
+                        : "@ @ @"
+                            .split(" ")
+                            .map((chunk: string) => chunk.charAt(0))
+                            .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>
             </TooltipTrigger>
@@ -247,7 +206,17 @@ export function Aside({ open, dropdoenOpen,setOpen }: AsideProps): React.ReactNo
                     src={user?.picture}
                     alt="@shadcn"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>
+                    {user?.username
+                      ? user.username
+                          .split(" ")
+                          .map((chunk: string) => chunk.charAt(0).toUpperCase())
+                          .join("")
+                      : "@ @ @"
+                          .split(" ")
+                          .map((chunk: string) => chunk.charAt(0))
+                          .join("")}
+                  </AvatarFallback>
                 </Avatar>
                 <p>{user?.email}</p>
               </DropdownMenuLabel>

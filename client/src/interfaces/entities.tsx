@@ -9,6 +9,7 @@ export interface User {
 }
 
 export interface Message {
+    type?: string
     message_id: number | string
     conversation_id: number
     content: string
@@ -22,6 +23,7 @@ export interface Message {
 
 export interface Conversation {
     read?: boolean
+    isGroup?: boolean
     picture?: string
     last_message_time?: string
     first_message_time?: string

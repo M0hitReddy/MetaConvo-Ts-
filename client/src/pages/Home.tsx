@@ -58,14 +58,14 @@ export function Home() {
           }}
           className="h-full items-stretch"
         >
-          <Sheet open={open}>
-            <SheetTrigger className="outline-none" onMouseEnter={() => {setOpen(true)}}>
-              <Aside open={open} setOpen={setOpen} />
-            </SheetTrigger>
-            <SheetContent className="outlone-none p-0" side={"left"} onMouseLeave={() => !dropdownOpen ? setOpen(false) : null}>
-              <Aside open={open} setOpen={setOpen}/>
-            </SheetContent>
-          </Sheet>
+          {/* <Sheet open={open}> */}
+            {/* <SheetTrigger className="outline-none" onMouseEnter={() => {setOpen(true)}}> */}
+              <Aside />
+            {/* </SheetTrigger> */}
+            {/* <SheetContent className="outlone-none p-0" side={"left"} onMouseLeave={() => !dropdownOpen ? setOpen(false) : null}> */}
+              {/* <Aside open={open} setOpen={setOpen}/> */}
+            {/* </SheetContent> */}
+          {/* </Sheet> */}
 
           <Chats defaultLayout={defaultLayout} />
           <ResizableHandle withHandle />

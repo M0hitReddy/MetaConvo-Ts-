@@ -19,10 +19,22 @@ import {
   createConversation,
   getConversation,
   getMessages,
+  getTranslatedText,
 } from "@/services/api";
 import { ApiResponse } from "@/interfaces/apiResponse";
 import { Conversation, Message } from "@/interfaces/entities";
 import { MessageItems } from "./MessageItems";
+import { CornerDownLeft, Mic, Paperclip } from "lucide-react";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { SelectScrollable } from "./SelectScrollable";
+import languages from "../utils/languages.json";
+import { set } from "date-fns";
+import { get } from "http";
 // import { ResizablePanel } from "./ui/resizable";
 // import { HomeProps } from "@/pages/Home";
 
@@ -34,6 +46,7 @@ export function ChatDisplay() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [message, setMessage] = useState("");
   const [showInput, setShowInput] = useState(false);
+  const[language, setLanguage] = useState<string>("original");
   //   const today = new Date();
 
   useEffect(() => {
@@ -101,27 +114,32 @@ export function ChatDisplay() {
       return;
     }
     // console.log('fetching messages')
-    (async () => {
-      try {
-        // if (!chatsState.selectedChat) return;
-        const res: { data: ApiResponse } = await getMessages(
-          chatsState.selectedChat?.conversation_id ?? -1
-        );
-        // axios.get(
-        //   `http://localhost:5000/chats/messages?conversationId=${state.selectedChat.conversation_id}`
-        // );
-        // const data = res.data.messages;
-        console.log(res.data.messages);
-        chatsDispatch({
-          type: "SET_MESSAGES",
-          payload: res.data.messages || [],
-        });
-        // if(state.messages.length == 0) setShowInput(false);
-      } catch (error) {
-        console.error(error);
-      }
-    })();
+    getSetMessages();
   }, [chatsState.selectedChat]);
+
+  useEffect(() => {
+    console.log("language changed", language);
+    if(language == "original") {
+      getSetMessages();
+      return;
+    }
+    (async () => {try {
+      if (chatsState.messages.length == 0) return;
+      const res: {data: ApiResponse } = await getTranslatedText(language, chatsState.messages.map((message) => message.content));
+      if(!res.data.translatedText) return;
+      chatsDispatch({
+        type: "SET_MESSAGES",
+        payload: chatsState.messages.map((message, index) => ({
+          ...message,
+          content: res.data.translatedText?.[index] ?? message.content
+        }))
+      });// console.log(messages);
+      // console.log(messages[0]);
+    }
+    catch (error) {
+      console.error(error);
+    }})();
+  }, [language]);
 
   const handleStartChat = async () => {
     try {
@@ -189,6 +207,31 @@ export function ChatDisplay() {
     }
   };
 
+  const handleLanguageChange = () => {
+    // setLanguage(language);
+    console.log("language changed", language);
+  }
+  const getSetMessages = async () => {
+    try {
+      // if (!chatsState.selectedChat) return;
+      const res: { data: ApiResponse } = await getMessages(
+        chatsState.selectedChat?.conversation_id ?? -1
+      );
+      // axios.get(
+      //   `http://localhost:5000/chats/messages?conversationId=${state.selectedChat.conversation_id}`
+      // );
+      // const data = res.data.messages;
+      console.log(res.data.messages);
+      chatsDispatch({
+        type: "SET_MESSAGES",
+        payload: res.data.messages || [],
+      });
+      // if(state.messages.length == 0) setShowInput(false);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const formatDate = (date: Date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -215,11 +258,15 @@ export function ChatDisplay() {
                   alt={chatsState.selectedChat.username}
                 />
                 <AvatarFallback>
-                  {chatsState.selectedChat.username ??
-                    "@ @ @"
-                      .split(" ")
-                      .map((chunk) => chunk[0])
-                      .join("")}
+                  {chatsState.selectedChat?.username
+                    ? chatsState.selectedChat.username
+                        .split(" ")
+                        .map((chunk: string) => chunk.charAt(0).toUpperCase())
+                        .join("")
+                    : "@ @ @"
+                        .split(" ")
+                        .map((chunk: string) => chunk.charAt(0))
+                        .join("")}
                 </AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
@@ -227,6 +274,7 @@ export function ChatDisplay() {
                   {chatsState.selectedChat.username}
                 </div>
               </div>
+              <SelectScrollable data={languages} value={language} onChange={handleLanguageChange} setLanguage={setLanguage}/>
             </div>
             {/* {state.selectedChat.timestamp && (
               <div className="ml-auto text-xs text-muted-foreground">
@@ -297,7 +345,7 @@ export function ChatDisplay() {
                     </div>
                   </div>
                 </form> */}
-                
+
                 <form className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
                   <Label htmlFor="message" className="sr-only">
                     Message
@@ -372,52 +420,45 @@ export function ChatDisplay() {
   );
 }
 
-import { CornerDownLeft, Mic, Paperclip } from "lucide-react";
-
 // import { Button } from "@/components/ui/button"
 // import { Label } from "@/components/ui/label"
 // import { Textarea } from "@/components/ui/textarea"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-export default function Component() {
-  return (
-    <form className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
-      <Label htmlFor="message" className="sr-only">
-        Message
-      </Label>
-      <Textarea
-        id="message"
-        placeholder="Type your message here..."
-        className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
-      />
-      <div className="flex items-center p-3 pt-0">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Paperclip className="size-4" />
-              <span className="sr-only">Attach file</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">Attach File</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Mic className="size-4" />
-              <span className="sr-only">Use Microphone</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">Use Microphone</TooltipContent>
-        </Tooltip>
-        <Button type="submit" size="sm" className="ml-auto gap-1.5">
-          Send Message
-          <CornerDownLeft className="size-3.5" />
-        </Button>
-      </div>
-    </form>
-  );
-}
+// export default function Component() {
+//   return (
+//     <form className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
+//       <Label htmlFor="message" className="sr-only">
+//         Message
+//       </Label>
+//       <Textarea
+//         id="message"
+//         placeholder="Type your message here..."
+//         className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+//       />
+//       <div className="flex items-center p-3 pt-0">
+//         <Tooltip>
+//           <TooltipTrigger asChild>
+//             <Button variant="ghost" size="icon">
+//               <Paperclip className="size-4" />
+//               <span className="sr-only">Attach file</span>
+//             </Button>
+//           </TooltipTrigger>
+//           <TooltipContent side="top">Attach File</TooltipContent>
+//         </Tooltip>
+//         <Tooltip>
+//           <TooltipTrigger asChild>
+//             <Button variant="ghost" size="icon">
+//               <Mic className="size-4" />
+//               <span className="sr-only">Use Microphone</span>
+//             </Button>
+//           </TooltipTrigger>
+//           <TooltipContent side="top">Use Microphone</TooltipContent>
+//         </Tooltip>
+//         <Button type="submit" size="sm" className="ml-auto gap-1.5">
+//           Send Message
+//           <CornerDownLeft className="size-3.5" />
+//         </Button>
+//       </div>
+//     </form>
+//   );
+// }

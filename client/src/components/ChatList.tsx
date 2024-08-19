@@ -33,7 +33,7 @@ export function ChatList({ search, items }: ChatListProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 1000); // Update every minute
 
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
@@ -135,7 +135,7 @@ export function ChatList({ search, items }: ChatListProps) {
                           : "text-muted-foreground"
                       )}
                     >
-                      {item.last_message_time
+                      {item.last_message_time && currentTime
                         ? formatDistanceToNow(
                             new Date(
                               currentTime ? item.last_message_time : "_ _"

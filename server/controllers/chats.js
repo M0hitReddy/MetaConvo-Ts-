@@ -1,3 +1,4 @@
+import axios from "axios";
 // import { dummyUsers } from "../sockets/users.js";
 import connection from "../db/db.js";
 // only when clicked on start chat with xyz, conversation is created, from then on, we get the created conversations data
@@ -272,4 +273,35 @@ export const getUsers = async (req, res) => {
   });
 
   // return res.json({ message: 'Conversation created' });
+};
+
+export const translateText = async (req, res) => {
+  const { text, target } = req.body;
+  const options = {
+    method: "POST",
+    url: "https://google-translate113.p.rapidapi.com/api/v1/translator/json",
+    headers: {
+      "x-rapidapi-key": process.env.RAPIDAPI_KEY,
+      "x-rapidapi-host": "google-translate113.p.rapidapi.com",
+      "Content-Type": "application/json",
+    },
+    data: {
+      from: "auto",
+      to: target,
+      json: {
+        message: text,
+      },
+    },
+  };
+  try {
+    const response = await axios.request(options);
+    return res.json({
+      status: "success",
+      message: "translated successfully",
+      translatedText: response.data.trans.message,
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
 };

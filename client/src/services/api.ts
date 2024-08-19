@@ -51,6 +51,10 @@ const sendMessage = (message: Message) => {
   return chats.post("/message", message);
 };
 
+const getTranslatedText = (target: string, text: Array<string>) => {
+  return chats.post("/translate", { target, text });
+};
+
 export {
   getToken,
   logout,
@@ -62,4 +66,5 @@ export {
   getConversations,
   getConversation,
   sendMessage,
+  getTranslatedText,
 };

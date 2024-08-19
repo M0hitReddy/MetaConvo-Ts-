@@ -57,10 +57,10 @@ const ProtectedRoute = ({ element }: { element: ReactNode }) => {
 
   const firstRender = useRef<boolean>(true);
   useEffect(() => {
-    // if (firstRender.current) {
-    //   firstRender.current = false;
-    //   return;
-    // }
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
     console.log(loggedIn, checked, "protected route");
     if (!checked) {
       // navigate("/login");
